@@ -122,68 +122,67 @@
 
     
 </section> <!-- content-main end// -->
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-const searchInput = document.getElementById("searchInput");
-const table = document.getElementById("category");
-const rows = table.getElementsByTagName("tr");
-
-searchInput.addEventListener("keyup", function () {
-const searchText = searchInput.value.toLowerCase();
-
-for (let i = 1; i < rows.length; i++) {
-  const rowData = rows[i].textContent.toLowerCase();
-  if (rowData.includes(searchText)) {
-      rows[i].style.display = "";
-  } else {
-      rows[i].style.display = "none";
-  }
-}
-});
-});
-        
-function ProductUnlist(productId) {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Please confirm to block this product!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Perform the deletion via AJAX/fetch to the server
-          fetch(`/admin/unlistCategory?id=${productId}`, {
-            method: 'GET',
-            // Add other necessary headers or configurations
-          }).then(response => {
-            if (response.ok) {
-              // Product successfully deleted
-              Swal.fire({
-                title: "success",
-                text: "Please confirm to unblock this product!",
-                icon: "success",
-                timer: 2000,
-                timeProgressBar: true,
-                showConfirmButton: false,
-
-
-              })
-                .then(() => {
-                  // Redirect after displaying the success message
-                  window.location.href = '/admin/category'; // Redirect to a suitable page
-                });
-            } else {
-              Swal.fire("Error!", "Failed to delete product", "error");
-            }
-          }).catch(error => {
-            Swal.fire("Error!", "Failed to delete product", "error");
-          });
-        }
-      });
+<script >
+             
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("category");
+    const rows = table.getElementsByTagName("tr");
+    
+    searchInput.addEventListener("keyup", function () {
+    const searchText = searchInput.value.toLowerCase();
+    
+    for (let i = 1; i < rows.length; i++) {
+      const rowData = rows[i].textContent.toLowerCase();
+      if (rowData.includes(searchText)) {
+          rows[i].style.display = "";
+      } else {
+          rows[i].style.display = "none";
+      }
     }
-
+    });
+    });
+            
+    function ProductUnlist(productId) {
+          Swal.fire({
+            title: "Are you sure?",
+            text: "Please confirm to block this product!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Perform the deletion via AJAX/fetch to the server
+              fetch(`/admin/unlistCategory?id=${productId}`, {
+                method: 'GET',
+                // Add other necessary headers or configurations
+              }).then(response => {
+                if (response.ok) {
+                  // Product successfully deleted
+                  Swal.fire({
+                    title: "success",
+                    text: "Please confirm to unblock this product!",
+                    icon: "success",
+                    timer: 2000,
+                    timeProgressBar: true,
+                    showConfirmButton: false,
+    
+    
+                  })
+                    .then(() => {
+                      // Redirect after displaying the success message
+                      window.location.href = '/admin/category'; // Redirect to a suitable page
+                    });
+                } else {
+                  Swal.fire("Error!", "Failed to delete product", "error");
+                }
+              }).catch(error => {
+                Swal.fire("Error!", "Failed to delete product", "error");
+              });
+            }
+          });
+        }  
   </script>
-
-    <%- include('../Layout/adminFooter.ejs') %>
+  <%- include('../Layout/adminFooter.ejs') %>

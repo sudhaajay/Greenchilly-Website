@@ -112,8 +112,7 @@ const verifyOtp = async (req, res) => {
     } catch (error) {
       console.log(error.message);
     }
-  };
-
+  }
 
 
   const resendOTP = async (req, res) => {
@@ -197,7 +196,7 @@ const loadLogin = async (req, res) => {
   const loadHome = async (req, res) => {
     try {
       const userId = req.session.user_id;
-      const productData = await Product.find().populate("category");
+      const productData = await Product.find({isVisible:true}).populate("category");
       const categories = await Category.find();
       
       
@@ -256,6 +255,61 @@ const loadLogin = async (req, res) => {
     }
   };
 
+  const loadprofile = async (req, res) => {
+    try {
+      const userId = req.session.user_id;
+      const userData = await User.findById(userId);
+      if (userData) {
+        res.render("user/userProfile", { userData });
+      } else {
+        res.redirect("/login");
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+  const userEdit = async (req, res) => {
+    try {
+      let id = req.body.user_id;
+  
+      const userData = await User.findById(id);
+  
+      const { name, mobile } = req.body;
+  
+      if(!req.file){
+        const updateData = await User.findByIdAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              name,
+              mobile,
+         
+            },
+          }
+        );
+      }
+      else{
+        const updateData = await User.findByIdAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              name,
+              mobile,
+              image: req.file.filename,
+            },
+          }
+        );
+      }
+  
+    
+  
+      res.redirect("/userprofile");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
 
   // User Logout------------------------ 
   const userLogout = async (req, res) => {
@@ -281,6 +335,8 @@ const loadLogin = async (req, res) => {
     resendOTP,
     loadShop,
     loadShopCategory,
-    loadSingleShop
+    loadSingleShop,
+    loadprofile,
+    userEdit
    
   }

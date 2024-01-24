@@ -1,11 +1,11 @@
 const express = require("express");
 const adminRoute = express();
-const multer=require('../middleware/multer')
 const adminController = require("../controller/admin/adminController");
-const adminAuth = require("../middleware/adminAuth");
 const categoryController=require("../controller/admin/categoryController");
-const productController=require('../controller/admin/productController')
-
+const productController=require('../controller/admin/productController');
+const orderController=require('../controller/admin/orderController');
+const multer=require('../middleware/multer');
+const adminAuth = require("../middleware/adminAuth");
 
 // LOGIN
 adminRoute.get("/", adminAuth.isLogout, adminController.loadAdminLogin);
@@ -40,6 +40,12 @@ adminRoute.post("/addCategory",multer.uploadCategory.single('image'), categoryCo
 adminRoute.get("/editCategory",adminAuth.isLogin,categoryController.loadEditCategory);
 adminRoute.post("/editCategory",multer.uploadCategory.single('image'), categoryController.CategoryEdit);
 adminRoute.get('/unlistCategory',adminAuth.isLogin,categoryController.unlistCategory)
+
+
+// All ORDERS
+adminRoute.get("/alluserorders", adminAuth.isLogin, orderController.listUserOrders);
+adminRoute.get("/orderDetails", adminAuth.isLogin, orderController.listOrderDetails);
+adminRoute.get("/orderStatusChange", adminAuth.isLogin, orderController.orderStatusChange);
 
 
 module.exports = adminRoute;

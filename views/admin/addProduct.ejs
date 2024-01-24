@@ -74,7 +74,7 @@
 
 
                         </div>
-                    </div> <!-- card end// -->
+                    </div> 
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="row gx-3">
@@ -139,12 +139,13 @@
                                                         <img style="width: 100px; height: 100px; margin-bottom: 20px;" src="/uploadimage.svg" alt="Default" class="image-preview">
                                                     </div>
                                                 </div>
-                                                <input class="form-control" name="image"  multiple="multiple" type="file" onchange="displayImages(this)">
+                                                <input class="form-control" name="image"  multiple="multiple" type="file" id="imageInput" onchange="displayImages(this)">
                                                 <div class="error-message" style="color: red;" id="product_image-error"></div>
                                             </div>
                                             
                                             <script>
-                                                function displayImages(input) {
+                                           
+                                                      function displayImages(input) {
                                                     const previewContainer = document.querySelector('.image-preview-container');
                                                     previewContainer.innerHTML = ''; // Clear previous previews
                                             
@@ -217,65 +218,91 @@
     </form>
 
 
-
     <script>
-       
-        function displayImage(imageNumber, input) {
-            const preview = document.getElementById(`image-preview${imageNumber}`);
+               
+function displayImage(imageNumber, input) {
+    const preview = document.getElementById(`image-preview${imageNumber}`);
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = '';
-            }
-        }
-
-        // function removeSize(button) {
-        // const container = document.querySelector('.size-container');
-        // const sizeDiv = button.parentElement.parentElement; // Get the parent div containing the size and stock fields.
-        // container.removeChild(sizeDiv); // Remove the parent div from the container.
-    // }
-  
- 
-    function validationChecking() {
-        const product_title = document.getElementById("product_title").value;
-        const product_brand = document.getElementById("product_brand").value;
-        const product_category = document.querySelector('select[name="category"]').value.trim();
-        const product_stock = document.getElementById("product_stock").value;
-        const product_price = document.getElementById("product_price").value;
-        const discount_price = document.getElementById("discount_price").value;
-        const description = document.getElementById("description").value;
-
-        const product_title_error = document.getElementById("product_title-error");
-        const product_brand_error = document.getElementById("product_brand-error");
-        const product_category_error = document.getElementById("product_category-error");
-        const product_stock_error = document.getElementById("product_stock-error");
-        const product_price_error = document.getElementById("product_price-error");
-        const discount_price_error = document.getElementById("discount_price-error");
-        const description_error = document.getElementById("description-error");
-
-        product_title_error.innerHTML = product_title.trim() === "" ? "Please enter product name" : "";
-        product_brand_error.innerHTML = product_brand.trim() === "" ? "Please enter product brand" : "";
-        product_category_error.innerHTML = product_category.trim() === "" ? "Please enter product category" : "";
-        product_stock_error.innerHTML = isNaN(product_stock) || product_stock.trim() === "" || parseFloat(product_stock) < 0 ? "Please enter a valid stock " : "";
-        product_price_error.innerHTML = isNaN(product_price) || product_price.trim() === "" || parseFloat(product_price) < 0 ? "Please enter a valid price " : "";
-        discount_price_error.innerHTML = isNaN(discount_price) || discount_price.trim() === "" || parseFloat(discount_price) < 0 ? "Please enter a valid discount price " : "";
-        description_error.innerHTML = description.trim() === "" ? "Please enter product description" : "";
-
-        return !(product_title_error.innerHTML !== "" || product_brand_error.innerHTML !== "" || product_category_error.innerHTML !== "" || product_stock_error.innerHTML !== "" || product_price_error.innerHTML !== "" || discount_price_error.innerHTML !== "" || description_error.innerHTML !== "");
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
     }
-</script>
+}
 
+// function removeSize(button) {
+// const container = document.querySelector('.size-container');
+// const sizeDiv = button.parentElement.parentElement; // Get the parent div containing the size and stock fields.
+// container.removeChild(sizeDiv); // Remove the parent div from the container.
+// }
+
+
+function validationChecking() {
+ 
+const product_title = document.getElementById("product_title").value;
+const product_brand = document.getElementById("product_brand").value;
+const product_category = document.querySelector('select[name="category"]').value.trim();
+const product_stock = document.getElementById("product_stock").value;
+const product_price = document.getElementById("product_price").value;
+const discount_price = document.getElementById("discount_price").value;
+const description = document.getElementById("description").value;
+
+const product_title_error = document.getElementById("product_title-error");
+const product_brand_error = document.getElementById("product_brand-error");
+const product_category_error = document.getElementById("product_category-error");
+const product_stock_error = document.getElementById("product_stock-error");
+const product_price_error = document.getElementById("product_price-error");
+const discount_price_error = document.getElementById("discount_price-error");
+const description_error = document.getElementById("description-error");
+
+product_title_error.innerHTML = product_title.trim() === "" ? "Please enter product name" : "";
+product_brand_error.innerHTML = product_brand.trim() === "" ? "Please enter product brand" : "";
+product_category_error.innerHTML = product_category.trim() === "" ? "Please enter product category" : "";
+product_stock_error.innerHTML = isNaN(product_stock) || product_stock.trim() === "" || parseFloat(product_stock) < 0 ? "Please enter a valid stock " : "";
+product_price_error.innerHTML = isNaN(product_price) || product_price.trim() === "" || parseFloat(product_price) < 0 ? "Please enter a valid price " : "";
+discount_price_error.innerHTML = isNaN(discount_price) || discount_price.trim() === "" || parseFloat(discount_price) < 0 ? "Please enter a valid discount price " : "";
+description_error.innerHTML = description.trim() === "" ? "Please enter product description" : "";
+
+
+
+const fileInput = document.getElementById("imageInput");
+    const errorMessage = document.getElementById("product_image-error");
+
+    // Reset error message
+    errorMessage.innerHTML = "";
+
+    // Check if files are selected
+    if (fileInput.files.length === 0) {
+        errorMessage.innerHTML = "Please select at least one image.";
+        return false;  // Updated this line
+    }
+
+    // Check file formats
+    const allowedFormats = ["image/jpeg", "image/avif", "image/png", "image/webp", "image/gif"]; // Add more formats if needed
+
+    for (const file of fileInput.files) {
+        if (!allowedFormats.includes(file.type)) {
+            errorMessage.innerHTML = "Invalid image format. Please select images in JPEG, PNG, or GIF format.";
+            fileInput.value = ""; // Clear the selected files
+            return false;  // Updated this line
+        }
+    }
+
+
+
+return !(errorMessage.innerHTML !== ""||product_title_error.innerHTML !== "" || product_brand_error.innerHTML !== "" || product_category_error.innerHTML !== "" || product_stock_error.innerHTML !== "" || product_price_error.innerHTML !== "" || discount_price_error.innerHTML !== "" || description_error.innerHTML !== "");
+}
+ </script>
 
         
 
 
  
-    </script>
+
 
     
 

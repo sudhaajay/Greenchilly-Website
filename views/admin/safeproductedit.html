@@ -1,6 +1,6 @@
 <%- include('../Layout/adminHeader.ejs') %>
     <form action="/admin/editProduct" method="post" enctype="multipart/form-data" id="product-form"
-  >
+    onsubmit="return validationChecking()">
 
         <section class="content-main">
             <div class="row">
@@ -81,7 +81,7 @@
                             
                             <div>
                                 <label class="form-label">Description</label>
-                                <textarea placeholder="Enter Description" name="description" id="product_description"   class="form-control"
+                                <textarea placeholder="Enter Description" name="description"   class="form-control"
                                     rows="4"><%= product.description %></textarea>
                                 <div class="error-message" style="color: red;" id="product_description-error"></div>
 
@@ -187,80 +187,76 @@
 
 
 
-    <script>
+    <script >
+ 
+function displayImage(imageNumber, input) {
+    const preview = document.getElementById(`image-preview${imageNumber}`);
 
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
+    }
+}
 
-        function displayImage(imageNumber, input) {
-            const preview = document.getElementById(`image-preview${imageNumber}`);
-
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = '';
-            }
-        }
-    
-    function viewImage(event, imageIndex) {
-    const imgView = document.getElementById(`imgView${imageIndex}`);
-    imgView.src = URL.createObjectURL(event.target.files[0]);
+function viewImage(event, imageIndex) {
+const imgView = document.getElementById(`imgView${imageIndex}`);
+imgView.src = URL.createObjectURL(event.target.files[0]);
 }
 
 
 
 
-// onsubmit="return validationChecking()"
 
-document.getElementById('product-form').addEventListener('submit', (e) => {
-    e.preventDefault();
 
-    const product_title = document.getElementById("product_title").value;
-    const brand = document.getElementById("product_brand").value;
-    const product_category = document.querySelector('select[name="category"]').value.trim();
-    const stock = document.getElementById("product_stock").value;
-    const product_price = document.getElementById("product_price").value;
-    const discount_price = document.getElementById("product_discount_price").value;
-    const description = document.getElementById("product_description").value;
 
-    const product_title_error = document.getElementById("product_title-error");
-    const product_brand_error = document.getElementById("product_brand-error");
-    const product_category_error = document.getElementById("product_catergory-error");
-    const stock_error = document.getElementById("product_stock-error");
-    const product_price_error = document.getElementById("product_price-error");
-    const discount_price_error = document.getElementById("product_discount_price-error");
-    const description_error = document.getElementById("product_description-error");
 
-    product_title_error.innerHTML = product_title.trim() === "" ? "Please enter product name" : "";
-    product_brand_error.innerHTML = brand.trim() === "" ? "Please enter product brand" : "";
-    product_category_error.innerHTML = product_category === "" ? "Please enter product category" : "";
-    stock_error.innerHTML = isNaN(stock) || stock.trim() === "" || parseFloat(stock) < 0 ? "Please enter a valid stock " : "";
-    product_price_error.innerHTML = isNaN(product_price) || product_price.trim() === "" || parseFloat(product_price) < 0 ? "Please enter a valid price " : "";
-    discount_price_error.innerHTML = isNaN(discount_price) || discount_price.trim() === "" || parseFloat(discount_price) < 0 ? "Please enter a valid discount price " : "";
-    description_error.innerHTML = description.trim() === "" ? "Please enter product description" : "";
+function validationChecking() {
+  
+const product_title = document.getElementById("product_title").value;
+const brand = document.getElementById("brand").value;
+const product_category = document.querySelector('select[name="category"]').value.trim();
+const stock = document.getElementById("stock").value;
+const product_price = document.getElementById("product_price").value;
+const discount_price = document.getElementById("discount_price").value;
+const description = document.getElementById("description").value;
 
-    // Check if any error messages are displayed
-    if (
-        product_title_error.innerHTML === "" &&
-        product_brand_error.innerHTML === "" &&
-        product_category_error.innerHTML === "" &&
-        stock_error.innerHTML === "" &&
-        product_price_error.innerHTML === "" &&
-        discount_price_error.innerHTML === "" &&
-        description_error.innerHTML === ""
-    ) {
-        // No errors, proceed with form submission
-        // You should return true here, indicating that the form should be submitted
-        document.getElementById('product-form').submit();
-    } else {
-        // Errors found, prevent form submission
-        // You should return false here, indicating that the form should not be submitted
-        return false;
-    }
-});
-  </script>
+const product_title_error = document.getElementById("product_title-error");
+const product_brand_error = document.getElementById("product_brand-error");
+const product_category_error = document.getElementById("product_category-error");
+const stock_error = document.getElementById("product_stock-error");
+const product_price_error= document.getElementById("product_price-error");
+const discount_price_error = document.getElementById("product_discount_price-error");
+const description_error = document.getElementById("product_description-error");
+
+
+
+
+
+product_title_error.innerHTML = product_title.trim() === "" ? "Please enter product name" : "";
+product_brand_error.innerHTML = product_brand.trim() === "" ? "Please enter product brand" : "";
+product_category_error.innerHTML = product_category.trim() === "" ? "Please enter product category" : "";
+product_stock_error.innerHTML = isNaN(product_stock) || product_stock.trim() === "" || parseFloat(product_stock) < 0 ? "Please enter a valid stock " : "";
+product_price_error.innerHTML = isNaN(product_price) || product_price.trim() === "" || parseFloat(product_price) < 0 ? "Please enter a valid price " : "";
+product_discount_price_error.innerHTML = isNaN(discount_price) || discount_price.trim() === "" || parseFloat(discount_price) < 0 ? "Please enter a valid discount price " : "";
+product_description_error.innerHTML = description.trim() === "" ? "Please enter product description" : "";
+
+
+
+return !(product_title.trim() === "" || product_brand.trim() === ""|| product_category.trim() === "" || product_stock.trim() === "" || product_price.trim() === ""|| discount_price.trim() === ""|| description.trim() === ""); 
+}
+
+
+
+
+
+
+
+    </script>
 
 
     <%- include('../Layout/adminFooter.ejs') %>
