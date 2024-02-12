@@ -63,7 +63,7 @@ userRoute.post('/razorpayOrder',islogin,orderController.razorpayOrder );
 userRoute.get('/orderSuccess',orderController.loadOrderDetails );
 userRoute.get('/orderDetails/:id',orderController.loadOrderHistory );
 userRoute.post('/orderCancel',orderController.orderCancel );
-
+userRoute.post('/return',orderController.returnData)
 
 // coupon-------------------------------------------------
 userRoute.get('/coupons',islogin,couponController.userCouponList);

@@ -353,37 +353,36 @@
                                 </table>
                             </div>
                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                            <div class="payment_method">
-                                <div class="mb-25">
-                                    <h5>Payment</h5>
-                                </div>
-                              
-    <div class="payment_option">
-       <div class="custome-radio">
-          <input class="form-check-input" value="CashOnDelivery" required="" type="radio" 
-          name="payment_option" id="exampleRadios1" checked="">
-          <label class="form-check-label" for="exampleRadios1" data-bs-toggle="collapse" 
-           data-target="#CashOnDelivery1" aria-controls="CashOnDelivery1">Cash On Delivery</label>
+    <div class="payment_method">
+        <div class="mb-25">
+            <h5>Payment</h5>
         </div>
-        <div class="custome-radio">
-           <input class="form-check-input" value="onlinePayment" required="" type="radio"
-           name="payment_option" id="exampleRadios2">
-           <label class="form-check-label" for="exampleRadios2" data-bs-toggle="collapse"
-       data-target="#onlinePayment" aria-controls="onlinePayment">online Payment</label>
- </div>
- <div class="custome-radio">
-    <input class="form-check-input" value="Wallet" required="" type="radio"
-     name="payment_option" id="exampleRadios3">
-     <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse"
-     data-target="#Wallet" aria-controls="Wallet">Wallet</label>
-     </div>
-</div>     
- </div>
+        <div class="payment_option">
+            <div class="custome-radio">
+                <input class="form-check-input" value="CashOnDelivery" required="" type="radio" 
+                name="payment_option" id="exampleRadios1" >
+                <label class="form-check-label" for="exampleRadios1" data-bs-toggle="collapse" 
+                data-target="#CashOnDelivery1" aria-controls="CashOnDelivery1">Cash On Delivery</label>
+            </div>
+            <div class="custome-radio">
+                <input class="form-check-input" value="onlinePayment" checked="" required="" type="radio"
+                name="payment_option" id="exampleRadios2">
+                <label class="form-check-label" for="exampleRadios2" data-bs-toggle="collapse"
+                data-target="#onlinePayment" aria-controls="onlinePayment">Online Payment</label>
+            </div>
+            <div class="custome-radio">
+                <input class="form-check-input" value="Wallet" required="" type="radio"
+                name="payment_option" id="exampleRadios3">
+                <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse"
+                data-target="#Wallet" aria-controls="Wallet">Wallet</label>
+            </div>
+        </div>
+    </div>
     <%if (subtotalWithShipping !=0) {%>
     <a href="#" id="btn_checkout" class="btn btn-fill-out btn-block mt-30">Place Order</a>
-     <% }else{ %>
-     <button id="btn_checkout" class="btn btn-fill-out btn-block mt-30" disabled>Place Order</button>
-     <% } %>
+    <% }else{ %>
+    <button id="btn_checkout" class="btn btn-fill-out btn-block mt-30" disabled>Place Order</button>
+    <% } %>
 
                         </div>
                     </div>
@@ -392,7 +391,21 @@
         </section>
     </main>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
- 
+    <script>
+        document.getElementById('btn_checkout').addEventListener('click', function(event) {
+            // Check if Cash On Delivery is selected
+            var codRadio = document.querySelector('input[value="CashOnDelivery"]');
+            if (codRadio.checked) {
+                // Get the subtotal
+                var subtotal = parseFloat('<%=subtotalWithShipping%>'); // Assuming subtotalWithShipping is a variable in your server-side code
+                if (subtotal > 1000) {
+                    // Display a popup message
+                    alert('Cash on Delivery is not available for orders exceeding 1000.');
+                    event.preventDefault(); // Prevent form submission or link navigation
+                }
+            }
+        });
+    </script>
     <script>
 
         const couponRadios = document.querySelectorAll('input[name="checkcoupen"]');
@@ -414,10 +427,14 @@
             });
         });
 
-        cashOnDeliveryRadio.addEventListener('click', function () {
+         cashOnDeliveryRadio.addEventListener('click', async function () {
             if (subtotal > 1000) {
-                alert("Cash on Delivery is not available for subtotals exceeding 1000 rupees.");
-                cashOnDeliveryRadio.checked = false; // Uncheck Cash on Delivery
+                await Swal.fire({
+                    title: 'Error',
+                    text: 'Cash on Delivery is not available for subtotals exceeding 1000 rupees.',
+                    icon: 'error',
+                });
+                cashOnDeliveryRadio.checked = false
             }
         });
 
@@ -514,14 +531,16 @@
     const couponCode = couponCodeInput.value;
 
     if (!selectedAddress) {
-    const notification = document.getElementById('cartNotification');
-    notification.style.display = 'block';
+    // const notification = document.getElementById('cartNotification');
+    // notification.style.display = 'block';
 
     // Hide the notification after 2 seconds
-    setTimeout(() => {
-        notification.style.display = 'none';
+    Swal.fire("Error!", 'Please select an address', "error");
+    // setTimeout(() => {
+    //     notification.style.display = 'none';
 
-    }, 2000);
+    // }, 2000);
+    return false
   }
 
     const address = selectedAddress.value;
@@ -534,12 +553,8 @@
   };
 
   
-  if (selectedPaymentMethod == "CashOnDelivery" && subtotal > 1000) {
-                alert("Cash on Delivery is not available for subtotals exceeding 1000 rupees.");
-                return;
-            }
 
-            if (selectedPaymentMethod == "CashOnDelivery") {
+    if (selectedPaymentMethod == "CashOnDelivery") {
     fetch('/checkout', {
         method: 'POST',
         headers: {
@@ -689,184 +704,6 @@
 
 }
 
-   
-</script >
-
-
-
-
-
-
-
-
-
-< script >
-// Add event listener to copy coupon code
-document.querySelectorAll('.copy-coupon-btn').forEach(function (button) {
-button.addEventListener('click', function () {
-    const couponCode = this.dataset.coupon;
-    copyToClipboard(couponCode);
-});
-});
-
-// Function to copy text to clipboard
-function copyToClipboard(text) {
-navigator.clipboard.writeText(text).then(function () {
-Swal.fire({
-    title: 'Copied',
-    text: 'Coupon code copied',
-    background: '#ffffff', // Set the background color to white
-    customClass: {
-        popup: 'white-background', // Add a custom class for additional styling
-    },
-    icon: 'success',
-});
-}).catch(function (err) {
-console.error('Unable to copy to clipboard', err);
-});
-}
-
-
-
-
-
-</script>
-
-        // function placeOrder() {
-          
-        //             const selectedAddress = document.getElementById('addressradio').value;
-        //             let selectedPaymentMethod = document.querySelector('input[name="payment_option"]:checked').value;
-                  
-
-        //         const address = selectedAddress;
-
-        //         const requestData = {
-        
-        //             address: address,
-        //             paymentMethod: selectedPaymentMethod,
-
-        //         };
-        //         console.log(selectedAddress,"requestData")
-
-        //         if (selectedPaymentMethod == "CashOnDelivery") {
-        //             console.log(requestData,"requestData")
-
-        //             fetch('/checkout', {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify(requestData),
-        //             })
-        //                 .then(response => response.json())
-        //                 .then(data => {
-
-        //                     if (data.success) {
-
-        //                         Swal.fire({
-        //                             title: "Success",
-        //                             text: data.message,
-        //                             icon: "success",
-        //                             timer: 2000,
-        //                             timeProgressBar: true,
-        //                             showConfirmButton: true,
-        //                         }).then(() => {
-        //                             // Redirect after displaying the success message
-        //                             window.location.href = '/orderSuccess';
-        //                         });
-        //                     } else {
-        //                         Swal.fire("Error!", data.error, "error");
-        //                     }
-        //                 })
-        //                 .catch(error => {
-        //                     console.error('Error:', error);
-        //                     alert('Error occurred while placing order');
-        //                 });
-        //         } else if (selectedPaymentMethod == "onlinePayment") {
-
-        //             console.log(requestData,"requestData")
-                  
-        //             fetch('/razorpayOrder', {
-        //                 method: 'POST',
-        //                 headers: {
-        //                     'Content-Type': 'application/json',
-        //                 },
-        //                 body: JSON.stringify(requestData),
-        //             })
-        //                 .then(response => response.json())
-        //                 .then(data => {
-
-        //                     if (data.success) {
-
-        //                         const options = {
-        //                             key:"rzp_test_CdB8n6mXEG0Oud",
-        //                             amount: data.order.amount,
-        //                             currency: "INR",
-        //                             name: "Saika Eco-Living",
-        //                             description: "Payment for Your Order",
-        //                             order_id: data.order.id,
-        //                             handler: async function (response) {
-        //                                 // Handle successful payment response here
-        //                                 console.log("Payment successful:", response);
-        //                                 if (response.razorpay_payment_id) {
-        //                                     // Move the order creation logic here
-
-
-        //                                     const createOrderResponse = await fetch("/checkout", {
-
-        //                                         method: "POST",
-        //                                         headers: {
-        //                                             "Content-Type": "application/json",
-        //                                         },
-        //                                         body: JSON.stringify({ ...requestData, amount: (options.amount) / 100 }),
-        //                                     });
-
-
-        //                                     const orderData = await createOrderResponse.json();
-
-        //                                     if (orderData.success) {
-        //                                         console.log("Order created successfully");
-        //                                         // Redirect to order confirmation page or any other desired action
-        //                                         window.location.href = "/orderSuccess";
-        //                                     } else {
-        //                                         // Handle error in order creation
-        //                                         console.error("Error in order creation:", orderData.error);
-        //                                     }
-        //                                 }
-        //                             },
-        //                             prefill: {
-        //                                 name: "Saika Eco-Living",
-        //                                 email: "kutoospatoos@gmail.com",
-        //                                 contact: "9446830690"
-        //                             },
-        //                             notes: {
-        //                                 address: "Razorpay Corporate Office"
-        //                             },
-        //                             theme: {
-        //                                 color: "#3399cc"
-        //                             }
-        //                         };
-                          
-        //                         const rzp = new Razorpay(options);
-        //                         rzp.open();
-        //                     } else {
-        //                         // Handle error in Razorpay order creation
-        //                         console.error("Error in Razorpay order creation:", data.error);
-        //                     }
-
-        //                 })
-        //                 .catch(error => {
-        //                     console.error('Error:', error);
-        //                     alert('Error occurred while placing orderewew');
-        //                 });
-        //         }
-        //     }
-
-        
-    
-        // </script>
-        <script>
-
 
 document.addEventListener('DOMContentLoaded', function () {
   const houseName = document.getElementById("houseName");
@@ -931,5 +768,44 @@ function validationChecking() {
 
   return isValid;
 }
+   
+
+
+
+
+
+
+
+
+// Add event listener to copy coupon code
+document.querySelectorAll('.copy-coupon-btn').forEach(function (button) {
+button.addEventListener('click', function () {
+    const couponCode = this.dataset.coupon;
+    copyToClipboard(couponCode);
+});
+});
+
+// Function to copy text to clipboard
+function copyToClipboard(text) {
+navigator.clipboard.writeText(text).then(function () {
+Swal.fire({
+    title: 'Copied',
+    text: 'Coupon code copied',
+    background: '#ffffff', // Set the background color to white
+    customClass: {
+        popup: 'white-background', // Add a custom class for additional styling
+    },
+    icon: 'success',
+});
+}).catch(function (err) {
+console.error('Unable to copy to clipboard', err);
+});
+}
+
 </script>
+
+
+
+
+
     <%- include('../Layout/UserFooter.ejs') %>

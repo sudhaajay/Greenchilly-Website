@@ -160,7 +160,6 @@ const checkOutPost = async (req, res) => {
     if (couponCode) {
       totalAmount = await applyCoup(couponCode, totalAmount, userId);
     }
-
     if (paymentMethod == "Wallet") {
       const walletData = await Wallet.findOne({ user: userId });
       if (totalAmount <= walletData.walletBalance) {
@@ -180,7 +179,7 @@ const checkOutPost = async (req, res) => {
             new Date().getTime() + 5 * 24 * 60 * 60 * 1000
           ),
           totalAmount: totalAmount,
-          coupon: couponCode,
+          coupon: couponCode ? couponCode : null,
           items: cartItems.map((cartItem) => ({
             product: cartItem.product._id,
             quantity: cartItem.quantity,
@@ -202,7 +201,7 @@ const checkOutPost = async (req, res) => {
       const order = new Order({
         user: userId,
         address: address,
-        coupon: couponCode,
+        coupon: couponCode ? couponCode : null,
         orderDate: new Date(),
         deliveryDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
         totalAmount: req.body.amount,
@@ -225,7 +224,7 @@ const checkOutPost = async (req, res) => {
         orderDate: new Date(),
         deliveryDate: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
         totalAmount: totalAmount,
-        coupon: couponCode,
+        coupon: couponCode ? couponCode : null,
         items: cartItems.map((cartItem) => ({
           product: cartItem.product._id,
           quantity: cartItem.quantity,
@@ -314,7 +313,7 @@ const loadOrderHistory = async (req, res) => {
 // cancel Order----------------------------
 const orderCancel = async (req, res) => {
   try {
-    console.log('in');
+    console.log("in");
     const orderId = req.query.id;
     const { reason, productId } = req.body;
     const order = await Order.findOne({ _id: orderId })
@@ -335,77 +334,87 @@ const orderCancel = async (req, res) => {
     );
 
     const couponData = await Coupon.findOne({ code: order.coupon });
-    
+
     if (product && product.product) {
       if (product.status === "Confirmed") {
         await product.product.save();
       }
 
-    
-    
-    if (
-      product.paymentMethod === "Wallet" ||
-      product.paymentMethod === "Online Payment"
-    ) {
-      const walletData = await Wallet.findOne({ user: user_id });
-      if (walletData) {
-        walletData.walletBalance +=
-        (product.ZZZZ * product.quantity)-
-         (product.price * product.quantity)*
-         (couponData?.discount?couponData.discount:0)/100;
-         walletData.transaction.push({
-          type: "credit",
-          amount:(product.price * product.quantity)- 
-          (product.price * product.quantity)*
-          (couponData?.discount?couponData.discount:0)/100,
-        });
-        await walletData.save();
+      if (
+        product.paymentMethod === "Wallet" ||
+        product.paymentMethod === "Online Payment"
+      ) {
+        const walletData = await Wallet.findOne({ user: user_id });
+        if (walletData) {
+          walletData.walletBalance += product.price * product.quantity;
+          //  (couponData?.discount?couponData.discount:0)/100;
+          walletData.transaction.push({
+            type: "credit",
+            amount:
+              product.price * product.quantity -
+              (product.price *
+                product.quantity *
+                (couponData?.discount ? couponData.discount : 0)) /
+                100,
+          });
+          await walletData.save();
+        } else {
+          const wallet = new Wallet({
+            user: user_id,
+            transaction: [
+              {
+                type: "credit",
+                amount:
+                  product.price * product.quantity -
+                  (product.price *
+                    product.quantity *
+                    (couponData?.discount ? couponData.discount : 0)) /
+                    100,
+              },
+            ],
+            walletBalance:
+              product.price * product.quantity -
+              (product.price *
+                product.quantity *
+                (couponData?.discount ? couponData.discount : 0)) /
+                100,
+          });
+          await wallet.save();
+        }
+
+        product.paymentStatus = "Refunded";
       } else {
-        const wallet = new Wallet({
-          user: user_id,
-          transaction:[{type:"credit",amount:
-             (product.price * product.quantity)- 
-             (product.price * product.quantity)*
-             (couponData?.discount?couponData.discount:0)/100}],
-            walletBalance:(product.price * product.quantity)- 
-            (product.price * product.quantity)*
-            (couponData?.discount?couponData.discount:0)/100
-        });
-        await wallet.save();
+        product.paymentStatus = "Declined";
       }
-    
-
- 
-      product.paymentStatus = "Refunded";
-    } else {
-      product.paymentStatus = "Declined";
+      product.status = "Cancelled";
+      product.reason = reason;
+      totalAmount =
+        totalAmount -
+        (product.price * product.quantity -
+          (product.price *
+            product.quantity *
+            (couponData?.discount ? couponData.discount : 0)) /
+            100);
     }
-    product.status = "Cancelled";
-    product.reason = reason;
-    totalAmount =totalAmount- ((product.price *
-       product.quantity)- (product.price * product.quantity)*
-       (couponData?.discount?couponData.discount:0)/100);
-  }
-  const updateData = await Order.findByIdAndUpdate(
-    orderId,
-    {
-      $set: {
-        items: order.items,
-        totalAmount
+    const updateData = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: {
+          items: order.items,
+          totalAmount,
+        },
       },
-    },
-    { new: true }
-  );
-console.log("done");
-  return res.status(200).json({ message: "Order cancelled successfully" });
-} catch (error) {
-  console.error(error);
-  return res
-    .status(500)
-    .json({ error: "An error occurred while cancelling the order" });
-}
+      { new: true }
+    );
+    console.log("done");
+    return res.status(200).json({ message: "Order cancelled successfully" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while cancelling the order" });
+  }
 };
-
 
 // ---------------returnData---------------------
 const returnData = async (req, res) => {
@@ -421,7 +430,9 @@ const returnData = async (req, res) => {
       path: "items.product",
       model: "Product",
     });
-  const couponData = await Coupon.findOne({ code: order.coupon });
+  const couponData = order.coupon
+    ? await Coupon.findOne({ code: order.coupon })
+    : null;
   const user_id = order.user._id;
   let totalAmount = order.totalAmount;
 
@@ -430,27 +441,19 @@ const returnData = async (req, res) => {
   );
 
   if (product && product.product) {
-    if (product.status === "Delivered") {
-      product.product.sizes.forEach((size) => {
-        if (size.size === product.size.toString()) {
-          size.stock += product.quantity;
-        }
-      });
-      await product.product.save();
-    }
-
+    const total = product.price * product.quantity;
     const walletData = await Wallet.findOne({ user: user_id });
 
     if (walletData) {
-      walletData.walletBalance +=
-        product.price * product.quantity -
-        (product.price * product.quantity * couponData.discount) / 100;
+      walletData.walletBalance += order.coupon
+        ? total - (total * couponData.discount) / 100
+        : total;
 
       walletData.transaction.push({
         type: "credit",
-        amount:
-          product.price * product.quantity -
-          (product.price * product.quantity * couponData.discount) / 100,
+        amount: order.coupon
+          ? total - (total * couponData.discount) / 100
+          : total,
       });
 
       await walletData.save();
@@ -460,14 +463,14 @@ const returnData = async (req, res) => {
         transaction: [
           {
             type: "credit",
-            amount:
-              product.price * product.quantity -
-              (product.price * product.quantity * couponData.discount) / 100,
+            amount: order.coupon
+              ? total - (total * couponData.discount) / 100
+              : total,
           },
         ],
-        walletBalance:
-          product.price * product.quantity -
-          (product.price * product.quantity * couponData.discount) / 100,
+        walletBalance: order.coupon
+          ? total - (total * couponData.discount) / 100
+          : total,
       });
 
       await wallet.save();
@@ -476,10 +479,9 @@ const returnData = async (req, res) => {
     product.status = "Returned";
     product.paymentStatus = "Refunded";
     product.reason = reason;
-    totalAmount =
-      totalAmount -
-      product.price * product.quantity -
-      (product.price * product.quantity * couponData.discount) / 100;
+    totalAmount -= order.coupon
+      ? total - (total * couponData.discount) / 100
+      : total;
   }
 
   await order.save();
@@ -534,19 +536,18 @@ const applyCoupon = async (req, res) => {
     }
     let discountedTotal = 0;
 
+    discountedTotal = calculateDiscountedTotal(orderTotal, coupon.discount);
 
-  
-      discountedTotal = calculateDiscountedTotal(orderTotal, coupon.discount);
-  
-    if (coupon.maxAmt<discountedTotal) {
-      errorMessage = "The Discount cant be applied. It is beyond maximum  amount";
+    if (coupon.maxAmt < discountedTotal) {
+      errorMessage =
+        "The Discount cant be applied. It is beyond maximum  amount";
       return res.json({ errorMessage });
     }
 
-    res.status(200).json({ success: true,discountedTotal, message: "return sucessfully" });
-    
+    res
+      .status(200)
+      .json({ success: true, discountedTotal, message: "return sucessfully" });
   } catch (error) {
-  
     res.status(500).json({ errorMessage: "Internal Server Error" });
   }
 };
@@ -569,11 +570,8 @@ async function applyCoup(couponCode, discountedTotal, userId) {
     return discountedTotal;
   }
 
-    discountedTotal = calculateDiscountedTotal(
-      discountedTotal,
-      coupon.discount
-    );
-  
+  discountedTotal = calculateDiscountedTotal(discountedTotal, coupon.discount);
+
   coupon.limit--;
   coupon.usersUsed.push(userId);
   await coupon.save();
