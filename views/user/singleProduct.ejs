@@ -58,8 +58,8 @@
             <div class="container">
                 <div class="breadcrumb">
                     <a href="index.html" rel="nofollow">Home</a>
-                    <span></span> Fashion
-                    <span></span> Abstract Print Patchwork Dress
+                    <span></span>shop
+                    <span></span> Single product
                 </div>
             </div>
         </div>
@@ -72,7 +72,9 @@
                                 <div class="col-1 custom-col d-flex  flex-column justify-content-center">
                                     <% for (let i = 0; i < product.image.length; i++) {%>        
                           
-                                    <img src='/assets/imgs/productIMG/<%= product.image[i]%>' onclick="changeMainImage('<%= product.image[i] %>')" alt="Thumbnail" class="my-3 thumbnail">
+                                    <img src='/assets/imgs/productIMG/<%= product.image[i]%>' 
+                                    onclick="changeMainImage('<%= product.image[i] %>')"
+                                     alt="Thumbnail" class="my-3 thumbnail">
                                     <% } %>        
                           
                                   </div>
@@ -86,14 +88,15 @@
                                     </div>
                                     <div class=" image-container">
                                         <div class="zoom-container">
-                                            <img src='/assets/imgs/productIMG/<%= product.image[0]%>' id="mainImage" alt="Image" class="image-zoom">
+                                            <img src='/assets/imgs/productIMG/<%= product.image[0]%>'
+                                             id="mainImage" alt="Image" class="image-zoom">
                                         </div>
                                       </div>
 
 
 
                                     <div class="social-icons single-share">
-                                        <ul class="text-grey-5 d-inline-block">
+                                        <!-- <ul class="text-grey-5 d-inline-block">
                                             <li><strong class="mr-10">Share this:</strong></li>
                                             <li class="social-facebook"><a href="#"><img
                                                         src="/userassets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
@@ -107,7 +110,7 @@
                                             <li class="social-linkedin"><a href="#"><img
                                                         src="/userassets/imgs/theme/icons/icon-pinterest.svg"
                                                         alt=""></a></li>
-                                        </ul>
+                                        </ul> -->
                                     </div>  
                                 </div>
                                 <div class="col-md-6 col-sm-12 col-xs-12">
@@ -117,7 +120,7 @@
                                         </h2>
                                         <div class="product-detail-rating">
                                             <div class="pro-details-brand">
-                                                <span> Brands: <a href="shop-grid-right.html">Bootstrap</a></span>
+                                                <span> Brands: <a href="shop-grid-right.html"> <%= product.brand %></a></span>
                                             </div>
                                             <div class="product-rate-cover text-end">
                                                 <div class="product-rate d-inline-block">
@@ -159,17 +162,28 @@
 
 
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                        <form action="/cart" method="post">
-                                            <input type="hidden" value="<%= product._id %>"name="productData_id" id="">
-                                            <div class="detail-extralink">
-                                                <input type="number" name="qty" class="w-25 py-4" value="1" min="1" max="10">
-                                                <div class="product-extra-link2 w-50 my-1">
-    
-                                                    <button type="submit" class=" btn-product btn-cart"><span>Add To Cart</span></button>
-    
-    
-                                                    <button aria-label="Add To Wishlist" class=" btn action-btn hover-up p-3  "
-                                                        ><i class="fi-rs-heart  "></i></button>
+                                        <% if(product.stock!=0) { %>
+                                            <form id="myForm" action="<%= userData ? '/cart' : '/login' %>" method="post">
+                                                <input type="hidden" value="<%= product._id %>" name="productData_id" id="">
+                                                <div class="detail-extralink">
+                                                    <input type="number" name="qty" class="w-25 py-4" value="1" min="1" max="10">
+                                                    <div class="product-extra-link2 w-50 my-1">
+                                                        <button type="submit" class="btn-product btn-cart">
+                                                            <span>AddToCart </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        <% } else { %>
+                                            <div class="product-extra-link2 w-50 my-1">
+                                                <button type="submit" class="btn-product btn-cart">
+                                                    <span>OutofStock</span>
+                                                </button>
+                                            </div>
+                                        <% } %>
+                                                    
+                                                    <!-- <button aria-label="Add To Wishlist" class=" btn action-btn hover-up p-3  "
+                                                        ><i class="fi-rs-heart  "></i></button> -->
                                                 </div>
                                             </div>
                                         </form>

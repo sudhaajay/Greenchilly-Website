@@ -71,7 +71,8 @@ const loadCartPage = async (req, res) => {
     try {
       const userId = req.session.user_id;
       const product_Id = req.body.productData_id;
-      const qty = parseInt(req.body.qty, 10);
+      let qty = parseInt(req.body.qty, 10);
+       qty = qty? qty:1
       console.log('userId:',userId);
       console.log('product_Id:', product_Id);
       console.log('qty:', qty);
@@ -92,6 +93,7 @@ const loadCartPage = async (req, res) => {
         if (existingCartItem) {
           existingCartItem.quantity += qty;
         } else {
+          console.log('else');
           existingCart.items.push({
             product: product_Id,
             quantity: qty,
@@ -102,7 +104,7 @@ const loadCartPage = async (req, res) => {
           (total, item) => total + (item.quantity || 0),
           0
         );
-  
+  console.log('save');
         await existingCart.save();
       } else {
         const newCart = new Cart({
@@ -132,12 +134,11 @@ const loadCartPage = async (req, res) => {
     try {
       const userId = req.session.user_id;
       const productId = req.query.productId;
-      const newQuantity = parseInt(req.query.quantity);
-  
-      const existingCart = await Cart.findOne({ user: userId });
+      const newQuantity = parseInt(req.body.newQuantity);
+      const existingCart = await Cart.findOne({ user: userId }).populate("items.product");
       if (existingCart) {
         const existingCartItem = existingCart.items.find(
-          (item) => item.product.toString() === productId
+          (item) => item.product._id.toString() == productId
         );
   
         if (existingCartItem) {
@@ -147,9 +148,9 @@ const loadCartPage = async (req, res) => {
             0
           );
   
-          await existingCart.save();
+          
         }
-  
+        await existingCart.save();
         res.json({ success: true });
       } else {
         res.json({ success: false, error: "Cart not found" });

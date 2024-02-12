@@ -4,6 +4,7 @@ const adminController = require("../controller/admin/adminController");
 const categoryController=require("../controller/admin/categoryController");
 const productController=require('../controller/admin/productController');
 const orderController=require('../controller/admin/orderController');
+const couponController = require("../controller/admin/couponController");
 const multer=require('../middleware/multer');
 const adminAuth = require("../middleware/adminAuth");
 
@@ -45,7 +46,19 @@ adminRoute.get('/unlistCategory',adminAuth.isLogin,categoryController.unlistCate
 // All ORDERS
 adminRoute.get("/alluserorders", adminAuth.isLogin, orderController.listUserOrders);
 adminRoute.get("/orderDetails", adminAuth.isLogin, orderController.listOrderDetails);
-adminRoute.get("/orderStatusChange", adminAuth.isLogin, orderController.orderStatusChange);
+adminRoute.put("/orderStatusChange", orderController.orderStatusChange);
+adminRoute.get("/salesReport", adminAuth.isLogin,orderController.loadSalesReport);
+
+
+
+// COUPON
+adminRoute.get("/coupenAdd", adminAuth.isLogin, couponController.loadCouponAdd);
+adminRoute.post("/coupenAdd", couponController.addCoupon);
+adminRoute.get( "/couponList",adminAuth.isLogin,couponController.loadCouponList);
+adminRoute.get("/couponEdit",adminAuth.isLogin,couponController.loadEditCoupon);
+adminRoute.put("/couponEdit", couponController.editCoupon);
+adminRoute.get("/couponUnlist",adminAuth.isLogin,couponController.unlistCoupon);
+adminRoute.get("/couponDetails",adminAuth.isLogin,couponController.couponDetails);
 
 
 module.exports = adminRoute;

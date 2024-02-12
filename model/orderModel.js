@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Address',
   },
+
   orderDate: {
     type: Date,
     default: Date.now,
@@ -20,25 +21,13 @@ const orderSchema = new mongoose.Schema({
     type:String,
     default:'Free Shipping'
 },
-  status: {
-    type: String,
-    default: 'pending',
-  },
-  reason:{
-    type:String
-  },
+ 
+
   totalAmount :{
     type:Number,
     require:true,
   },
-  paymentMethod: {
-    type:String,
-    require:true,
-  },
-  paymentStatus:{
-    type:String,
-    default:'Pending'
-  },
+
  
   items: [
     {
@@ -48,6 +37,21 @@ const orderSchema = new mongoose.Schema({
       },
       quantity: Number,
       price: Number,
+      status: {
+        type: String,
+        default: 'pending',
+      },
+      reason:{
+        type:String
+      },
+      paymentMethod: {
+        type:String,
+        require:true,
+      },
+      paymentStatus:{
+        type:String,
+        default:'Pending'
+      },
     },
   ],
 });

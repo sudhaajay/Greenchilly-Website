@@ -7,16 +7,29 @@ const sharp=require('sharp')
 // ------------Get product page--------------
 const loadProducts = async (req, res) => {
   try {
-    
-    const products = await Product.find().populate("category");
-    
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
+    const totalCount = await Product.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const products = await Product.find()
+      .populate("category")
+      .skip((page - 1) * limit)
+      .limit(limit);
+
     const categories = await Category.find();
-    console.log(categories);
-    res.render("admin/products", { products, categories });
+
+    res.render("admin/products", {
+      products,
+      categories,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log(error.message);
   }
 };
+
 
 // -------------Get add Porduct Page-----------------------
 const loadPorductForm = async (req, res) => {
@@ -38,17 +51,13 @@ const addProduct = async (req, res) => {
     const imageFiles = req.files;
 
     for (const file of imageFiles) {
-      console.log(file, "File received");
-
       const randomInteger = Math.floor(Math.random() * 20000001);
       const imageDirectory = path.join('public', 'assets', 'imgs', 'productIMG');
       const imgFileName = "cropped" + randomInteger + ".jpg";
       const imagePath = path.join(imageDirectory, imgFileName);
-
-      console.log(imagePath, "Image path");
-console.log(file.path,"sudha");
       const croppedImage = await sharp(file.path)
-        .resize(580, 320, {
+        // .resize(580, 320, {
+          .resize(440, 337, {
           fit: "cover",
         })
         .toFile(imagePath);
@@ -59,7 +68,17 @@ console.log(file.path,"sudha");
     }
 
     const { name, brand, category, stock, price,discount_price, description,image } = req.body;
-    
+    const existingProduct = await Product.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+    let categories = await Category.find({});
+    if (existingProduct) {
+      res.render("admin/addProduct", {
+        error: "Product with the same name already exists",
+        product: existingProduct,
+        categories,
+      });
+    }
     const addProducts = new Product({
       name,
       brand,
@@ -104,9 +123,6 @@ const storeEditProduct = async (req, res) => {
     const product = await Product.findOne({ _id: req.body.product_id });
     let images = [];
     let deleteData = []; // Declare deleteData here
-
-    console.log(req.body.price, "jjjjjjj");
-
     const {
       name,
       brand,
@@ -118,14 +134,22 @@ const storeEditProduct = async (req, res) => {
       image: imageData,
     } = req.body;
 
-    console.log(req.body, "jjjjsasas1");
+    const existingProduct = await Product.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+    let categories = await Category.find({});
 
     if (req.body.deletecheckbox) {
       // Initialize deleteData as an array
-      deleteData = Array.isArray(req.body.deletecheckbox)
-        ? req.body.deletecheckbox.map((x) => Number(x))
-        : [Number(req.body.deletecheckbox)];
+      // deleteData = Array.isArray(req.body.deletecheckbox)
+      //   ? req.body.deletecheckbox.map((x) => Number(x))
+      //   : [Number(req.body.deletecheckbox)];
 
+      
+          deleteData.push(req.body.deletecheckbox);
+          deleteData = deleteData.flat().map((x) => Number(x));
+
+          
       images = product.image.filter((img, idx) => !deleteData.includes(idx));
     } else {
       images = product.image.map((img) => img);
@@ -143,8 +167,10 @@ const storeEditProduct = async (req, res) => {
         console.log(imagePath, "Image path");
 
         const croppedImage = await sharp(file.path)
-          .resize(580, 320, {
-            fit: "cover",
+          // .resize(580, 320, {
+          //   fit: "cover",
+          .resize(440, 337, {
+            fit: "fill",
           })
           .toFile(imagePath);
 

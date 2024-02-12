@@ -85,12 +85,7 @@
               <td>
                 <span><%= user.mobile %></span>
               </td>
-
-         
-         
-
               <td>
-               
                 <% if (user.is_blocked ==1) { %>
                   <a  onclick="ProductUnlist('<%= user._id %>'),`<%=  user.is_blocked==0 ? 'unlist' : 'list' %>`" class="btn btn-sm font-sm rounded btn-brand">
                     <i class="material-icons md-edit"></i> List

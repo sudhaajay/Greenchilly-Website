@@ -7,53 +7,35 @@
         <h2 class="content-title card-title">Order List</h2>
         <p>Lorem ipsum dolor sit amet.</p>
 
-      </div>
-      <div>
+       </div>
+       <div>
         <a href="#" class="btn btn-light rounded font-md">Export</a>
         <a href="#" class="btn btn-light rounded  font-md">Import</a>
         <a href="/admin/addproduct" class="btn btn-primary btn-sm rounded">Create new</a>
-      </div>
-    </div>
-    <div class="card mb-4">
-      <header class="card-header">
+       </div>
+       </div>
+       <div class="card mb-4">
+       <header class="card-header">
         <div class="row align-items-center">
 
           <form action="" method="get">
-
             <div style="display: flex;  align-items: center;">
               <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
-
-            
-              <div class="col-md-3 col-12 me-auto mb-md-0 mb-3" style="display: flex;">
-
-                <label for="status" class="form-control">Select Status:</label>
-                <select name="status" class="form-select" id="status">
-                  <option value="" selected>All</option>
-                  <option value="listed">Listed</option>
-                  <option value="unlisted">Unlisted</option>
-                </select>
-              </div>
-
               <input type="submit" class="btn btn-sm font-sm rounded btn-brand" value="Filter">
-
             </div>
           </form>
-
-
-
-
         </div>
-      </header>
+        </header>
 
-      <div class="card-body">
+        <div class="card-body">
 
         <table id="products" class="table">
           <thead>
             <tr>
                 <th>Order</th>
+                <th>Name</th>
                 <th>Order Date</th>
                 <th>Delivery Date</th>
-                <th>Status</th>
                 <th>Total</th>
                 <th>Actions</th>
             </tr>
@@ -64,22 +46,40 @@
                                 
             <tr>
                 <td><%= order_data._id %></td>
-                <td>     <%= new Date(order_data.orderDate).toLocaleDateString() %></td>
-                <td>     <%= new Date(order_data.deliveryDate).toLocaleDateString() %></td>
-               
-                <td><%= order_data.status %></td>
+                <td><%= order_data.user.name %></td>
+                <td><%= new Date(order_data.orderDate).toLocaleDateString() %></td>
+                <td><%= new Date(order_data.deliveryDate).toLocaleDateString() %></td>           
                 <td><%= order_data.totalAmount %></td>
                 <td><a href="/admin/orderDetails?id=<%= order_data._id %>" class="btn-small d-block">View</a></td>
             </tr>
-                     <% 
-                         }) %>
-           
+                     <%  }) %>
         </tbody>
         </table>
-
+        <div class="pagination-area mt-30 mb-50" style="display: flex; justify-content: center;">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                      <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage - 1 %>"><</a>
+                        </li>
+                      <% } %>
+                  
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                      <% } %>
+                  
+                      <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage + 1 %>">></a>
+                        </li>
+                      <% } %>
+                    </ul>
+                </nav>
+            </div>
       </div>
-    </div>
-
+    < /div>
   </section>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

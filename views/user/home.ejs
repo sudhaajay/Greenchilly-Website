@@ -11,7 +11,7 @@
                                     <h2 class="animated fw-900">Big Deals From</h2>
                                     <h1 class="animated fw-900 text-8">Manufacturer</h1>
                                     <p class="animated">Candles, Bags, Foods, Soaps...</p>
-                                    <a class="animated btn btn-brush btn-brush-1" href="shop-product-right.html"> Shop Now </a>
+                                    <a class="animated btn btn-brush btn-brush-1" href="/shop"> Shop Now </a>
                                 </div>
                             </div>
                             <div class="col-lg-7 col-md-6">
@@ -21,153 +21,101 @@
                             </div>
                         </div>
                     </div>
+                 </div>
+           </div>
+          </section>
+          <section class="featured section-padding position-relative">            
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-1.png" alt="">
+                            <h4 class="bg-1">Free Shipping</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-2.png" alt="">
+                            <h4 class="bg-3">Online Order</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-3.png" alt="">
+                            <h4 class="bg-2">Save Money</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-4.png" alt="">
+                            <h4 class="bg-4">Promotions</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-5.png" alt="">
+                            <h4 class="bg-5">Happy Sell</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img src="/userassets/imgs/theme/icons/feature-6.png" alt="">
+                            <h4 class="bg-6">24/7 Support</h4>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
-
-
-
-
-
-            <main class="main">
-              <!-- <div class="page-header breadcrumb-wrap">
-                <div class="container">
-                  <div class="breadcrumb">
-                    <a href="index.html" rel="nofollow">Home</a>
-                    <span></span> Shop
-                  </div>
-                </div>
-              </div> -->
-        <!-- <section class="mt-50 mb-50"> -->
-                <div class="container">
-                  <div class="row">
-                    <div class="col-lg-9">
-                      <div class="shop-product-fillter">
-                        <!-- <div class="totall-product">
-                          <p>
-                            We found <strong class="text-brand">688</strong> items for you!
-                          </p>
-                        </div> -->
-                        <div class="sort-by-product-area"></div>
-                      </div>
+        </section>
+        <section class="mt-50 mb-50">
+          <div class="container">
+              <div class="row">
+                
                       <div class="row product-grid-3">
-                            <%#= products %>
-
-                         <% for (const product of products) { %>
-                          <%if (product.is_listed) { %>
-                         
-            
-                        <div class="col-lg-4 col-md-4 col-12 col-sm-6">
-                          <div class="product-cart-wrap mb-30">
-                            <div class="product-img-action-wrap">
-                              <div class="product-img product-img-zoom">
-                                <a href="/singleProduct/<%= product._id%>">
-                                  <img
-                                    class="default-img"
-                                    src="/assets/imgs/productIMG/<%= product.image[0]%>"
-                                    alt=""
-                                  />
-                                  <img
-                                    class="hover-img"
-                                    src="/assets/imgs/productIMG/<%= product.image[1]%>"
-                                    alt=""
-                                  />
-                                </a>
-                              </div>
-            
-                              <div
-                                class="product-badges product-badges-position product-badges-mrg"
-                              >
-                                <span class="hot">Hot</span>
-                              </div>
-                            </div>
-                            <div class="product-content-wrap">
-                              <div class="product-category">
-                                <a href="shop-grid-right.html"><%= product.category.name %></a>
-                              </div>
-                              <h2><a href="/singleProduct/<%= product._id%>"><%= product.name %></a></h2>
-                              <div class="rating-result" title="90%">
-                                <span>
-                                  <span>90%</span>
-                                </span>
-                              </div>
-                              <div class="product-price">
-                                <% if (product.discount_price) { %>
-                                <span>₹<%= product.discount_price %> </span>
-                                <span class="old-price">- ₹<s><%= product.price %></s></span>
-            
-                                <% } else { %>
-                                <span class="old-price"> ₹<%= product.price %></span>
-                                <% } %>
-                              </div>
-            
-                            </div>
-                          </div>
-                        </div>
-            
-                         <% } } %>
+                          <% for (let i = 0; i < Math.min(products.length, 6); i++) { %>
+                              <% const product = products[i]; %>
+                              <% if (product.is_listed) { %>
+                                  <div class="col-lg-4 col-md-4 col-12 col-sm-6">
+                                      <div class="product-cart-wrap mb-30">
+                                          <div class="product-img-action-wrap">
+                                              <div class="product-img product-img-zoom">
+                                                  <a href="/singleProduct/<%= product._id %>">
+                                                      <img class="default-img" src="/assets/imgs/productIMG/<%= product.image[0] %>" alt="" />
+                                                      <img class="hover-img" src="/assets/imgs/productIMG/<%= product.image[1] %>" alt="" />
+                                                  </a>
+                                              </div>
+                                              <div class="product-badges product-badges-position product-badges-mrg">
+                                                  <span class="hot">Hot</span>
+                                              </div>
+                                          </div>
+                                          <div class="product-content-wrap">
+                                              <div class="product-category">
+                                                  <a href="shop-grid-right.html"><%= product.category.name %></a>
+                                              </div>
+                                              <h2><a href="/singleProduct/<%= product._id %>"><%= product.name %></a></h2>
+                                              <div class="rating-result" title="90%">
+                                                  <span><span>90%</span></span>
+                                              </div>
+                                              <div class="product-price">
+                                                  <% if (product.discount_price) { %>
+                                                      <span>₹<%= product.discount_price %> </span>
+                                                      <span class="old-price">- ₹<s><%= product.price %></s></span>
+                                                  <% } else { %>
+                                                      <span class="old-price"> ₹<%= product.price %></span>
+                                                  <% } %>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              <% } %>
+                          <% } %>
                       </div>
-                    </div>
-                    <div class="col-lg-3 primary-sidebar sticky-sidebar">
-                      <div class="row">
-                        <div class="col-lg-12 col-mg-6"></div>
-                        <div class="col-lg-12 col-mg-6"></div>
-                      </div>
-                      <div class="widget-category mb-30">
-                        <h5 class="section-title style-1 mb-30 wow fadeIn animated">
-                          Category
-                        </h5>
-            
-                        <ul class="categories">
-                          <li><a href="/shop"><option value="">All</option></a></li>
-                          <% categories.forEach(category=> { if (category.is_listed) { %>
-            
-                          <li>
-                            <a href="shopCategoryFilter?id=<%= category._id %>" >
-                              <option value="<%= category._id %>">
-                                <%= category.name %>
-                              </option></a>
-                            >
-                          </li>
-            
-                          <% } }); %>
-                        </ul>
-                      </div>
-                      <!-- <div class="widget-category mb-30">
-                        <h5 class="section-title style-1 mb-30 wow fadeIn animated">
-                          brand
-                        </h5>
-                      </div> -->
-                      <div class="sidebar-widget price_range range mb-30">
-                        <div class="widget-header position-relative mb-20 pb-10">
-                          <h5 class="widget-title mb-10">Fill by price</h5>
-                          <div class="bt-1 border-color-1"></div>
-                        </div>
-                        <div class="price-filter">
-                          <div class="price-filter-inner">
-                            <div id="slider-range"></div>
-                            <div class="price_slider_amount">
-                              <div class="label-input">
-                                <span>Range:</span><input
-                                  type="text"
-                                  id="amount"
-                                  name="price"
-                                  placeholder="Add Your Price"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                     
-                        <a href="shop-grid-right.html" class="btn btn-sm btn-default"
-                          ><i class="fi-rs-filter mr-5"></i> Fillter</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-    </section>
-            </main>
+                
+              </div>
+          </div>
+      </section>
+      
+        </main>
+          
             
             <script>
               function submitForm() {

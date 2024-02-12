@@ -7,15 +7,15 @@
         <h2 class="content-title card-title">Products List</h2>
         <p>Lorem ipsum dolor sit amet.</p>
 
-      </div>
-      <div>
+       </div>
+        <div>
         <a href="#" class="btn btn-light rounded font-md">Export</a>
         <a href="#" class="btn btn-light rounded  font-md">Import</a>
         <a href="/admin/addproduct" class="btn btn-primary btn-sm rounded">Create new</a>
-      </div>
-    </div>
-    <div class="card mb-4">
-      <header class="card-header">
+         </div>
+        </div>
+       <div class="card mb-4">
+         <header class="card-header">
         <div class="row align-items-center">
 
           <form action="" method="get">
@@ -37,11 +37,11 @@
               <input type="submit" class="btn btn-sm font-sm rounded btn-brand" value="Filter">
             </div>
           </form>
-        </div>
-      </header>
+         </div>
+         </header>
 
-      <div class="card-body">
-        <table id="products" class="table">
+         <div class="card-body">
+         <table id="products" class="table">
           <thead>
             <tr>
               <!-- <th scope="col"></th> -->
@@ -88,12 +88,10 @@
 
                   <% if(product.stock>20){
                     %>
+                   <span class="badge rounded-pill alert-success">In stock</span>
 
-                    <span class="badge rounded-pill alert-success">In stock</span>
                     <% }else if(product.stock==0){ %>
-                      <span class=" badge rounded-pill text-bg-danger ">
-                        out of stock
-                      </span>
+                      <span class=" badge rounded-pill alert-danger ">out of stock</span>
 
                       <% } else if(product.stock<20){ %>
 
@@ -136,11 +134,34 @@
                 </tr>
                 <% } %>
           </tbody>
-        </table>
+          </table>
+          
+          <div class="pagination-area mt-30 mb-50" style="display: flex; justify-content: center;">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                      <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage - 1 %>"><</a>
+                        </li>
+                      <% } %>
+                  
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                      <% } %>
+                  
+                      <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage + 1 %>">></a>
+                        </li>
+                      <% } %>
+                    </ul>
+                </nav>
+            </div>
 
       </div>
     </div>
-
   </section>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -170,7 +191,7 @@
     });
     </script>
 
-// soft delete-------------------------
+// soft delete
 <script>    
 function ProductUnlist(productId) {
       Swal.fire({

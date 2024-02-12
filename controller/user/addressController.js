@@ -85,7 +85,7 @@ const loadAddress = async (req, res) => {
       const id = req.query.id;
       const address = await Address.findById(id);
   
-      res.render("user/editAddres", {  userData, Address: address });
+      res.render("user/editAddress", {  userData, Address: address });
     } catch (error) {
       console.log(error.message); 
     }

@@ -3,6 +3,7 @@ const User = require("../../model/userModel");
 const Product = require("../../model/productModel");
 const Category = require("../../model/categoryModel");
 const message = require("../../config/mailer");
+const Wallet=require("../../model/walletModel")
 
 const securePassword = async (password) => {
     try {
@@ -14,7 +15,7 @@ const securePassword = async (password) => {
   };
   
 
-  // get register
+  // get register-----------------------
 const loadRegister = async (req, res) => {
     try {
       res.render("user/register");
@@ -25,7 +26,7 @@ const loadRegister = async (req, res) => {
 
 
   
-// post register
+// post register-----------------------
 const insertUser = async (req, res) => {
     try {
       const email = req.body.email;
@@ -114,7 +115,7 @@ const verifyOtp = async (req, res) => {
     }
   }
 
-
+// Resend OTP----------------------------------
   const resendOTP = async (req, res) => {
     try {
       // Retrieve user data from session storage
@@ -193,36 +194,126 @@ const loadLogin = async (req, res) => {
   
 
 //   load Home page-------------------------
-  const loadHome = async (req, res) => {
+
+
+
+const loadHome = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
+
+    const productData = await Product.find({ isVisible: true })
+      .populate("category")
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const categories = await Category.find();
+    const userData = await User.findById(userId);
+
+    // Count total products
+    const totalCount = await Product.countDocuments({ isVisible: true });
+    const totalPages = Math.ceil(totalCount / limit);
+
+    if (userData) {
+      res.render("user/home", {
+        userData,
+        products: productData,
+        categories,
+        totalPages,
+        currentPage: page,
+      });
+    } else {
+      res.render("user/home", {
+        userData: null,
+        products: productData,
+        categories,
+        totalPages,
+        currentPage: page,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+  
+  //  Load shop Page-----------------------
+
+  const loadShop = async (req, res) => {
     try {
       const userId = req.session.user_id;
-      const productData = await Product.find({isVisible:true}).populate("category");
+      const page = parseInt(req.query.page) || 1;
+      const limit = 6;
+  
+      const productData = await Product.find({ isVisible: true })
+        .populate("category")
+        .skip((page - 1) * limit)
+        .limit(limit);
+  
       const categories = await Category.find();
-      
-      
       const userData = await User.findById(userId);
-    
+  
+      // Count total products
+      const totalCount = await Product.countDocuments({ isVisible: true });
+      
+      // Calculate totalPages
+      const totalPages = Math.ceil(totalCount / limit);
+
+  console.log(page,'............................');
       if (userData) {
-        res.render("user/home", { userData,products: productData,categories });
+        res.render("user/shop", {
+          userData,
+          products: productData,
+          categories,
+          totalPages,
+          currentPage: page,
+        });
       } else {
-        res.render("user/home", { userData: null,products: productData,categories});
+        res.render("user/shop", {
+          userData: null,
+          products: productData,
+          categories,
+          totalPages,
+          currentPage: page,
+        });
       }
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  //  Load shop Page-----------------------
-  const loadShop = async (req, res) => {
+  const loadWallets = async (req, res) => {
     try {
       const userId = req.session.user_id;
       const userData = await User.findById(userId);
-      const productData = await Product.find().populate("category");
-      console.log(productData,"klkkl");
-      const categories = await Category.find();
-      res.render("user/shop", { products: productData, userData, categories});
-    } catch (error) {
-      console.log(error.message);
+  
+      if (!userData) {
+        return res.render("login", { userData: null });
+      }
+      const page = parseInt(req.query.page) || 1;
+   
+      const limit = 6;
+      const totalCount = await Product.countDocuments();
+      
+      const totalPages = Math.ceil(totalCount / limit);
+  
+      const walletData = await Wallet.findOne({ user: userId }).sort({ date: -1 })
+        .populate({
+          path: 'transaction',
+        }).skip((page - 1) * limit)
+        .limit(limit);;
+  
+      if (!walletData) {
+        return res.render("user/wallets", { userData, wallet: null,currentPage: 0 ,totalPages:0 });
+      }
+  
+      res.render("user/wallets", { userData, wallet: walletData, totalPages ,
+        currentPage: page, });
+  
+    } catch (err) {
+      console.error("Error in loadWallets route:", err);
+      res.status(500).send("Internal Server Error");
     }
   };
 
@@ -235,7 +326,7 @@ const loadLogin = async (req, res) => {
       const product = await Product.findById(productId);
       const categories = await Category.find().exec();
   
-      res.render("user/singleProduct", { userData, product, categories });
+      res.render("user/singleProduct", { userData:(userData ? userData : null), product, categories });
     } catch (error) {
       console.log(error.message);
     }
@@ -249,7 +340,23 @@ const loadLogin = async (req, res) => {
       const categoryId = req.query.id;
       const productData = await Product.find({category:categoryId});
       const categories = await Category.find();
-      res.render("user/shop", { products: productData, userData, categories});
+      if (userData) {
+        res.render("user/shop", {
+          userData,
+          products: productData,
+          categories,
+          totalPages,
+          currentPage: page,
+        });
+      } else {
+        res.render("user/shop", {
+          userData: null,
+          products: productData,
+          categories,
+          totalPages,
+          currentPage: page,
+        });
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -311,6 +418,102 @@ const loadLogin = async (req, res) => {
   };
   
 
+  
+// GET load Forget password  Page-----------------------
+const loadForgetpassword = async (req, res) => {
+  try {
+    res.render("user/forgotPassword");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// forgot Password OTP-----------------------
+const forgotPasswordOTP = async (req, res) => {
+  try {
+    const emaildata = req.body.email;
+    console.log("Email received:", emaildata);
+
+    const userExist = await User.findOne({ email: emaildata });
+    req.session.userData=userExist;
+    req.session.user_id = userExist._id;
+    if (userExist) {
+      const data = await message.sendVarifyMail(req, userExist.email);
+      return res.redirect("/otp");
+    } else {
+    
+      res.render("user/forgotPassword", {
+        error: "Attempt Failed",
+        User: null,
+      });
+    }
+  } catch (error) {
+    console.log("Error:", error.message);
+  }
+};
+
+// Get  Reset Password Page---------------------
+const loadResetPassword = async (req, res) => {
+  try {
+    if (req.session.user_id) {
+      const userId = req.session.user_id;
+      console.log(userId, "ajay");
+      const user = await User.findById(userId);
+
+      res.render("user/resetPassword", { User: user });
+    } else {
+      res.redirect("/forgotPassword");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// reset Password ------------------------------
+const resetPassword = async (req, res) => {
+  try {
+    const user_id = req.session.user_id;
+    const password = req.body.password;
+    const secure_password = await securePassword(password);
+    const updatedData = await User.findByIdAndUpdate(
+      { _id: user_id },
+      { $set: { password: secure_password } }
+    );
+    if (updatedData) {
+      res.redirect("/userprofile");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// update User Profile picture-------------------------------
+const updateUserProfilepic = async (req, res) => {
+  try {
+    const userData = await User.findById(req.session.user_id);
+
+    if (!req.file) {
+      // Handle error if no file is received
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const croppedImage = req.file.filename;
+
+    await User.findByIdAndUpdate(userData._id, {
+      $set: {
+        image: croppedImage,
+      },
+    });
+
+    res.status(200).json({ success: true, message: 'Profile Picture changed' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+
   // User Logout------------------------ 
   const userLogout = async (req, res) => {
     try {
@@ -330,6 +533,7 @@ const loadLogin = async (req, res) => {
     loadRegister,
     loadHome,
     loadOtp,
+    loadWallets,
     verifyOtp,
     verifyuserLogin,
     resendOTP,
@@ -337,6 +541,11 @@ const loadLogin = async (req, res) => {
     loadShopCategory,
     loadSingleShop,
     loadprofile,
-    userEdit
+    userEdit,
+    resetPassword,
+    loadResetPassword,
+    loadForgetpassword,
+    forgotPasswordOTP,
+    updateUserProfilepic 
    
   }
