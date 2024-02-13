@@ -292,9 +292,9 @@ const loadOrderDetails = async (req, res) => {
 const loadOrderHistory = async (req, res) => {
   try {
     const userId = req.session.user_id;
-    const orderId = req.params.id;
+    const {id}= req.params;
     const userData = await User.findById(userId);
-    const order = await Order.findById(orderId)
+    const order = await Order.findById(id)
       .populate("user")
       .populate({
         path: "address",

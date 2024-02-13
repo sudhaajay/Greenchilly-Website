@@ -283,6 +283,7 @@ const loadHome = async (req, res) => {
     }
   };
 
+  // ------------load Wallets-------------------------
   const loadWallets = async (req, res) => {
     try {
       const userId = req.session.user_id;

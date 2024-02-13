@@ -141,41 +141,38 @@ const listUser = async (req, res) => {
 
 
     try {
-      const id = req.query.id;
+      const {id}= req.query;
       const Uservalue = await User.findById(id);
       
-      if (Uservalue.is_blocked) {
+      // if (Uservalue.is_blocked) {
         const UserData = await User.updateOne(
           {_id:id},
           {
             $set: {
-              is_blocked: 0
+              is_blocked:!Uservalue.is_blocked
             },
           }
         );
-        if (req.session.user_id) delete req.session.user_id;
-      }else{
+      //   if (req.session.user_id) delete req.session.user_id;
+      // }else{
       
-        const UserData = await User.updateOne(
-          {_id:id},
-          {
-            $set: {
-              is_blocked: 1
-            },
-          }
-        );
-      }
+      //   const UserData = await User.updateOne(
+      //     {_id:id},
+      //     {
+      //       $set: {
+      //         is_blocked: 1
+      //       },
+      //     }
+      //   );
+      // }
       
       res.redirect("/admin/userData");
     } catch (error) {
       console.log(error.message);
     }
-  
-
 };
 
-
-
+// admin Logout ---------------------------------
 const adminLogout = async (req, res) => {
   try {
 
@@ -196,7 +193,4 @@ module.exports = {
   adminLogout,
   loadUserpage,
   listUser,
-
-  
-
 };

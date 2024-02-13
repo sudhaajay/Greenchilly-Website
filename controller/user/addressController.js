@@ -95,11 +95,11 @@ const loadAddress = async (req, res) => {
 //   Post Edit Address Page---------------------------
   const editAddress = async (req, res) => {
     try {
-      const id = req.body.address_id;
+      const {address_id} = req.body;
 
       const { houseName,street,city,state,pincode  } = req.body;
       const updateData = await Address.findByIdAndUpdate(
-        { _id: id },
+        { _id: address_id },
         {
           $set: {
             houseName,
@@ -124,7 +124,7 @@ const loadAddress = async (req, res) => {
  // Delete Address Page------------------------------ 
 const deleteAddress = async (req, res) => {
   try {
-    const id = req.query.id;
+    const {id} = req.query;
     console.log(id, "kkkkkk");
     const addressData = await Address.findByIdAndUpdate(
       { _id: id },
