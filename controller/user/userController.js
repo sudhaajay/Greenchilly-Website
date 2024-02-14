@@ -237,6 +237,41 @@ const loadHome = async (req, res) => {
   }
 };
 
+
+// ----------load About Page-------------------
+const loadAbout = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+
+    const userData = await User.findById(userId);
+  
+    if (userData) {
+      res.render("user/about", {  userData,  });
+    } else {
+      res.render("user/about", { userData: null,  });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// -----------load Contact Page------------------
+const loadContact = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+
+    const userData = await User.findById(userId);
+  
+    if (userData) {
+      res.render("user/contact", {  userData,  });
+    } else {
+      res.render("user/contact", { userData: null,  });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
   
   //  Load shop Page-----------------------
 
@@ -533,6 +568,8 @@ const updateUserProfilepic = async (req, res) => {
     insertUser,
     loadRegister,
     loadHome,
+    loadAbout,
+    loadContact,
     loadOtp,
     loadWallets,
     verifyOtp,

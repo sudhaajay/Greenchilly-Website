@@ -46,6 +46,8 @@ userRoute.post('/changePassword',userController.resetPassword );
 // Home
 userRoute.get('/', userController.loadHome);
 userRoute.get('/shop',userController.loadShop );
+userRoute.get('/about',islogin,userController.loadAbout );
+userRoute.get('/contact',islogin,userController.loadContact );
 userRoute.get('/singleProduct/:id',userController.loadSingleShop );
 userRoute.get('/shopCategoryFilter',userController.loadShopCategory );
 

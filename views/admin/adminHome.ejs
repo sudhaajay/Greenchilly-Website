@@ -121,8 +121,8 @@
             
             
             <div class="row">
-                <div class="col-lg-4">
-                    <div class="card mb-5">
+                <div class="col-lg-3">
+                    <div class="card mb-5" style="height: 400px; overflow-y: scroll;">
                         <article class="card-body">
                             <h5 class="card-title">New Members</h5>
                             <div class="new-member-list">
@@ -144,6 +144,73 @@
               </article>
           </div>
       </div>
+                    <div class="col-lg-3">
+                        <div class="card mb-5" style="height: 400px; overflow-y: scroll;">
+                            <article class="card-body">
+                                <h5 class="card-title">Top 10 Products</h5>
+                                <div class="new-member-list">
+                                    <% topProducts.forEach((product) => { %>
+
+                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/assets/imgs/productIMG/<%= product.product.image[0] %>" alt="" class="avatar">
+                                            <div>
+                                                <h6><%= product.product.name %></h6>
+                                                <!-- <p class="text-muted font-xs">
+                                                    Sanfrancisco
+                                                </p> -->
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-pill badge-soft-success"><%= product.orderCount %></span>                            </div>
+                                        <% }); %>
+                    </div>
+                </article>
+                </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card mb-5" style="height: 400px; overflow-y: scroll;">
+                        <article class="card-body">
+                            <h5 class="card-title">Top 10 categories</h5>
+                            <div class="new-member-list">
+                                <% topCategories.forEach((cat) => { %>
+
+                                <div class="d-flex align-items-center justify-content-between mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h6><%= cat.categoryName %></h6>
+                                            <!-- <p class="text-muted font-xs">
+                                                Sanfrancisco
+                                            </p> -->
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-pill badge-soft-success"><%= cat.orderCount %></span>                            </div>
+                                    <% }); %>
+                </div>
+                </article>
+                </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card mb-5 " style="height: 400px; overflow-y: scroll;">
+                        <article class="card-body">
+                            <h5 class="card-title">Top Brands</h5>
+                            <div class="new-member-list">
+                                <% topBrands.forEach((brand) => { %>
+
+                                <div class="d-flex align-items-center justify-content-between mb-4">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h6><%= brand._id %></h6>
+                                            <!-- <p class="text-muted font-xs">
+                                                Sanfrancisco
+                                            </p> -->
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-pill badge-soft-success"><%= brand.orderCount %></span>                            </div>
+                                    <% }); %>
+                </div>
+                </article>
+                </div>
+                </div>
   </div> 
 </div>
 

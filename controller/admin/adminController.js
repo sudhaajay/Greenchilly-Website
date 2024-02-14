@@ -92,7 +92,103 @@ const loadHome = async (req, res) => {
       const monthlyDataArray = await getMonthlyDataArray();
       // Get yearly data
       const yearlyDataArray = await getYearlyDataArray();
+    
 
+     let topProducts=await Order.aggregate([
+          { $unwind: "$items" }, // Deconstruct the items array
+          { 
+              $group: { 
+                  _id: "$items.product", // Group by product
+                  orderCount: { $sum: 1 } // Count the number of orders for each product
+              } 
+          },
+          { 
+              $sort: { orderCount: -1 } // Sort by order count descending
+          },
+          { 
+              $limit: 10 // Limit to top 10 products
+          },
+          { 
+              $lookup: { 
+                  from: "products", // The name of the Product collection
+                  localField: "_id", // Field from the current collection (Order) to match
+                  foreignField: "_id", // Field from the Product collection to match
+                  as: "productInfo" // Name of the field to store the joined product info
+              } 
+          },
+          { 
+              $project: { 
+                  _id: 0, // Exclude the _id field
+                  product: { $arrayElemAt: ["$productInfo", 0] }, // Get the first element from the productInfo array
+                  orderCount: 1 // Include the orderCount field
+              } 
+          }
+      ])
+
+        let topCategories = await Order.aggregate([
+        { $unwind: "$items" },
+        {
+            $lookup: {
+                from: "products",
+                localField: "items.product",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        {
+            $group: {
+                _id: "$product.category",
+                orderCount: { $sum: 1 }
+            }
+        },
+        { $sort: { orderCount: -1 } },
+        { $limit: 10 },
+        {
+            $lookup: {
+                from: "categories",
+                localField: "_id",
+                foreignField: "_id",
+                as: "category"
+            }
+        },
+        { $unwind: "$category" },
+        {
+            $project: {
+                categoryName: "$category.name",
+                orderCount: 1
+            }
+        }
+    ]);
+
+    console.log("Top Categories:", topCategories);
+
+    // For top brands
+    let topBrands = await Order.aggregate([
+        { $unwind: "$items" },
+        {
+            $lookup: {
+                from: "products",
+                localField: "items.product",
+                foreignField: "_id",
+                as: "product"
+            }
+        },
+        { $unwind: "$product" },
+        {
+            $group: {
+                _id: "$product.brand",
+                orderCount: { $sum: 1 }
+            }
+        },
+        { $sort: { orderCount: -1 } },
+        { $limit: 10 }
+    ]);
+    
+    console.log("Top Products:", topProducts);
+    console.log("Top Categories:", topCategories);
+    console.log("Top Brands:", topBrands);
+      console.log("toppppppppppp",topProducts);
 
     const dailyOrderCounts= dailyDataArray.map((item) => item.count)
     const monthlyOrderCounts= monthlyDataArray.map((item) => item.count)
@@ -111,6 +207,11 @@ const loadHome = async (req, res) => {
       dailyOrderCounts,
       monthlyOrderCounts,
       yearlyOrderCounts,
+      topProducts,
+      topCategories,
+      topBrands
+
+
     });
   } catch (error) {
     console.log(error.message);
