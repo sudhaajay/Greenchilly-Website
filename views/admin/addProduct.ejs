@@ -155,6 +155,7 @@
                                         id="upload_CoverInput" style="display: none;" type="button">Save</button>
                                 </center>
                             </div>
+                            <p id="CoverInputError" class="text-danger"></p>
                         </div>
                         <div class="card-header">
                             <h4>Sub Images</h4>
@@ -165,6 +166,7 @@
                                 <div id="imagePreview" class="image-preview"></div>
                                 <input name="image" id="imageInput" class="form-control" type="file" accept="image/*"
                                     multiple>
+                                <p id="product_image-error" class="text-danger"></p>
                             </div>
                         </div>
 
@@ -347,7 +349,6 @@
             const product_price_error = document.getElementById("product_price-error");
             const discount_price_error = document.getElementById("discount_price-error");
             const description_error = document.getElementById("description-error");
-
             product_title_error.innerHTML = product_title.trim() === "" ? "Please enter product name" : "";
             product_brand_error.innerHTML = product_brand.trim() === "" ? "Please enter product brand" : "";
             product_category_error.innerHTML = product_category.trim() === "" ? "Please enter product category" : "";
@@ -355,15 +356,18 @@
             product_price_error.innerHTML = isNaN(product_price) || product_price.trim() === "" || parseFloat(product_price) < 0 ? "Please enter a valid price " : "";
             discount_price_error.innerHTML = isNaN(discount_price) || discount_price.trim() === "" || parseFloat(discount_price) < 0 ? "Please enter a valid discount price " : "";
             description_error.innerHTML = description.trim() === "" ? "Please enter product description" : "";
+            
+            const coverimageInput = document.getElementById("CoverInput");
+            const product_coverimageerror = document.getElementById("CoverInputError");
 
-
-
+            if(coverimageInput.files.length === 0 || coverimageInput.files.length > 1) {
+                product_coverimageerror.innerHTML = 'Add One Cover Image'
+            }
             const fileInput = document.getElementById("imageInput");
             const errorMessage = document.getElementById("product_image-error");
 
             // Reset error message
             errorMessage.innerHTML = "";
-
             // Check if files are selected
             if (fileInput.files.length === 0) {
                 errorMessage.innerHTML = "Please select at least one image.";
@@ -372,7 +376,6 @@
 
             // Check file formats
             const allowedFormats = ["image/jpeg", "image/bmp", "image/avif", "image/png", "image/webp", "image/gif"]; // Add more formats if needed
-
             for (const file of fileInput.files) {
                 if (!allowedFormats.includes(file.type)) {
                     errorMessage.innerHTML = "Invalid image format. Please select images in JPEG, PNG, or GIF format.";
@@ -380,7 +383,7 @@
                     return false;  // Updated this line
                 }
             }
-            return !(errorMessage.innerHTML !== "" || product_title_error.innerHTML !== "" || product_brand_error.innerHTML !== "" || product_category_error.innerHTML !== "" || product_stock_error.innerHTML !== "" || product_price_error.innerHTML !== "" || discount_price_error.innerHTML !== "" || description_error.innerHTML !== "");
+            return (errorMessage.innerHTML !== "" || product_coverimageerror.innerHTML !== '' || product_title_error.innerHTML !== "" || product_brand_error.innerHTML !== "" || product_category_error.innerHTML !== "" || product_stock_error.innerHTML !== "" || product_price_error.innerHTML !== "" || discount_price_error.innerHTML !== "" || description_error.innerHTML !== "") ? false : true
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
